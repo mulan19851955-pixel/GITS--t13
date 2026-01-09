@@ -4,30 +4,22 @@ import {
   ActivityIndicator,
   Animated,
   FlatList,
+  Image,
+  ImageBackground,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
-} from "react-native";
+} from 'react-native';
 import { useMessages } from '@/hooks/useMessages';
 import { db } from '../../../src/firebase/firebaseConfig';
-import { Redirect } from 'expo-router';
-
-import {
-  collection,
-  addDoc,
-  serverTimestamp,
-  arrayUnion,
-  doc,
-  updateDoc,
-} from 'firebase/firestore';
-
-const chatId = 'твой_chat_id'; // ← замени на реальный или динамический (позже сделаем динамический)
+import { collection, addDoc, serverTimestamp, arrayUnion, doc, updateDoc } from 'firebase/firestore';  // ← ВОТ ЭТО!
+const chatId = 'твой_chat_id'; // ← замени на реальный или сделай динамическим позже
 
 export default function Index() {
   const { messages, loading } = useMessages(chatId);
-  const [input, setInput] = useState("");
+  const [input, setInput] = useState('');
   const [error, setError] = useState<string | null>(null);
   const { t } = useTranslation();
   const flatListRef = useRef<FlatList>(null);
@@ -36,29 +28,29 @@ export default function Index() {
     if (!input.trim()) return;
 
     try {
-      const messagesRef = collection(db, "chats", chatId, "messages");
+      const messagesRef = collection(db, 'chats', chatId, 'messages');
 
       await addDoc(messagesRef, {
         text: input.trim(),
-        author: "Me",
+        author: 'Me',
         createdAt: serverTimestamp(),
       });
 
-      setInput("");
+      setInput('');
       setError(null);
 
       setTimeout(() => {
         flatListRef.current?.scrollToEnd({ animated: true });
       }, 100);
     } catch (err: any) {
-      console.error("Ошибка отправки:", err);
-      setError(err.message || "Ошибка отправки сообщения");
+      console.error('Ошибка отправки:', err);
+      setError(err.message || 'Ошибка отправки сообщения');
     }
   };
 
   const addReaction = async (messageId: string, emoji: string) => {
     try {
-      const messageRef = doc(db, "chats", chatId, "messages", messageId);
+      const messageRef = doc(db, 'chats', chatId, 'messages', messageId);
 
       await updateDoc(messageRef, {
         reactions: arrayUnion(emoji),
@@ -68,13 +60,13 @@ export default function Index() {
         flatListRef.current?.scrollToEnd({ animated: true });
       }, 100);
     } catch (err: any) {
-      console.error("Ошибка реакции:", err);
-      setError(err.message || "Ошибка добавления реакции");
+      console.error('Ошибка реакции:', err);
+      setError(err.message || 'Ошибка добавления реакции');
     }
   };
 
   const formatTimestamp = (timestamp: any) => {
-    if (!timestamp || !timestamp.toDate) return "Отправляется...";
+    if (!timestamp || !timestamp.toDate) return 'Отправляется...';
     const date = timestamp.toDate();
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
@@ -87,7 +79,7 @@ export default function Index() {
     const yesterday = new Date(now);
     yesterday.setDate(now.getDate() - 1);
     if (date.toDateString() === yesterday.toDateString()) {
-      return t('yesterday') + " " + date.toTimeString().slice(0, 5);
+      return t('yesterday') + ' ' + date.toTimeString().slice(0, 5);
     }
     const dd = String(date.getDate()).padStart(2, '0');
     const mm = String(date.getMonth() + 1).padStart(2, '0');
@@ -105,79 +97,75 @@ export default function Index() {
       ]).start();
     }, []);
 
-    const isMe = item.author === "Me";
+    const isMe = item.author === 'Me';
 
     return (
       <Animated.View
         style={{
           opacity: fadeAnim,
           transform: [{ translateY: slideAnim }],
-          alignSelf: isMe ? "flex-end" : "flex-start",
+          alignSelf: isMe ? 'flex-end' : 'flex-start',
           marginVertical: 10,
-          maxWidth: "75%",
+          maxWidth: '75%',
         }}
       >
-        {/* Основной контейнер бабла */}
-        <View style={[styles.bubbleContainer, isMe && styles.myBubbleContainer]}>
-          {/* Само сердечко */}
-          <View style={[styles.heartBubble, isMe && styles.myHeartBubble]}>
-            <Text style={styles.author}>{item.author}</Text>
-            <Text style={styles.text}>{item.text}</Text>
-            {item.createdAt ? (
-              <Text style={[styles.timestamp, isMe && styles.myTimestamp]}>
-                {formatTimestamp(item.createdAt)}
-              </Text>
-            ) : (
-              <Text style={[styles.timestamp, isMe && styles.myTimestamp]}>
-                Отправляется...
-              </Text>
+        <View>
+          <View style={[styles.bubbleContainer, isMe && styles.myBubbleContainer]}>
+            <View style={[styles.heartBubble, isMe && styles.myHeartBubble]}>
+              <Text style={styles.author}>{item.author}</Text>
+              <Text style={styles.text}>{item.text}</Text>
+              {item.createdAt ? (
+                <Text style={[styles.timestamp, isMe && styles.myTimestamp]}>
+                  {formatTimestamp(item.createdAt)}
+                </Text>
+              ) : (
+                <Text style={[styles.timestamp, isMe && styles.myTimestamp]}>
+                  Отправляется...
+                </Text>
+              )}
+            </View>
+
+            <View style={[styles.heartTail, isMe && styles.myHeartTail]} />
+
+            <View style={[styles.smallHearts, isMe && styles.mySmallHearts]}>
+              <Text style={{ fontSize: 18 }}>❤️</Text>
+              <Text style={{ fontSize: 14, marginLeft: 6 }}>❤️</Text>
+            </View>
+
+            <View style={{ flexDirection: 'row', marginTop: 12, justifyContent: isMe ? 'flex-end' : 'flex-start' }}>
+              <TouchableOpacity onPress={() => addReaction(item.id, '🐈‍⬛')}>
+                <Text style={{ fontSize: 30, marginHorizontal: 5 }}>🐈‍⬛</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => addReaction(item.id, '😻')}>
+                <Text style={{ fontSize: 30, marginHorizontal: 5 }}>😻</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => addReaction(item.id, '🙊')}>
+                <Text style={{ fontSize: 30, marginHorizontal: 5 }}>🙊</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => addReaction(item.id, '🐾')}>
+                <Text style={{ fontSize: 30, marginHorizontal: 5 }}>🐾</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => addReaction(item.id, '😿')}>
+                <Text style={{ fontSize: 30, marginHorizontal: 5 }}>😿</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => addReaction(item.id, '😾')}>
+                <Text style={{ fontSize: 30, marginHorizontal: 5 }}>😾</Text>
+              </TouchableOpacity>
+            </View>
+
+            {item.reactions && Array.isArray(item.reactions) && item.reactions.length > 0 && (
+              <View style={{ flexDirection: 'row', marginTop: 8, flexWrap: 'wrap', alignSelf: isMe ? 'flex-end' : 'flex-start' }}>
+                {[...new Set(item.reactions as string[])].map((emoji: string, index: number) => {
+                  const count = (item.reactions as string[]).filter((r: string) => r === emoji).length;
+                  return (
+                    <Text key={index} style={{ fontSize: 24, marginHorizontal: 4 }}>
+                      {emoji}{count > 1 ? ` ${count}` : ''}
+                    </Text>
+                  );
+                })}
+              </View>
             )}
           </View>
-
-          {/* Хвостик сердечка */}
-          <View style={[styles.heartTail, isMe && styles.myHeartTail]} />
-
-          {/* Маленькие сердечки снизу */}
-          <View style={[styles.smallHearts, isMe && styles.mySmallHearts]}>
-            <Text style={{ fontSize: 18 }}>❤️</Text>
-            <Text style={{ fontSize: 14, marginLeft: 6 }}>❤️</Text>
-          </View>
-
-          {/* Кнопки реакций */}
-          <View style={{ flexDirection: 'row', marginTop: 12, justifyContent: isMe ? 'flex-end' : 'flex-start' }}>
-            <TouchableOpacity onPress={() => addReaction(item.id, '🐈‍⬛')}>
-              <Text style={{ fontSize: 30, marginHorizontal: 5 }}>🐈‍⬛</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => addReaction(item.id, '😻')}>
-              <Text style={{ fontSize: 30, marginHorizontal: 5 }}>😻</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => addReaction(item.id, '🙊')}>
-              <Text style={{ fontSize: 30, marginHorizontal: 5 }}>🙊</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => addReaction(item.id, '🐾')}>
-              <Text style={{ fontSize: 30, marginHorizontal: 5 }}>🐾</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => addReaction(item.id, '😿')}>
-              <Text style={{ fontSize: 30, marginHorizontal: 5 }}>😿</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => addReaction(item.id, '😾')}>
-              <Text style={{ fontSize: 30, marginHorizontal: 5 }}>😾</Text>
-            </TouchableOpacity>
-          </View>
-
-          {/* Отображение реакций */}
-          {item.reactions && Array.isArray(item.reactions) && item.reactions.length > 0 && (
-            <View style={{ flexDirection: 'row', marginTop: 8, flexWrap: 'wrap', alignSelf: isMe ? 'flex-end' : 'flex-start' }}>
-              {[...new Set(item.reactions as string[])].map((emoji: string, index: number) => {
-                const count = (item.reactions as string[]).filter((r: string) => r === emoji).length;
-                return (
-                  <Text key={index} style={{ fontSize: 24, marginHorizontal: 4 }}>
-                    {emoji}{count > 1 ? ` ${count}` : ''}
-                  </Text>
-                );
-              })}
-            </View>
-          )}
         </View>
       </Animated.View>
     );
@@ -201,39 +189,47 @@ export default function Index() {
   }
 
   return (
-    <View style={styles.container}>
-      <FlatList
-        ref={flatListRef}
-        data={messages}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <MessageItem item={item} />}
-        inverted={false}
-        onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
-      />
-      <View style={styles.inputRow}>
-        <TextInput
-          style={styles.input}
-          placeholder={t('inputPlaceholder')}
-          value={input}
-          onChangeText={setInput}
-          onSubmitEditing={sendMessage}
+    <ImageBackground
+      source={require('../../../chat-bg-cats-green.png')}
+      style={{ flex: 1 }}
+      resizeMode="repeat"
+    >
+      <View style={{ flex: 1, backgroundColor: 'rgba(232, 245, 232, 0.65)' }}>
+        <FlatList
+          ref={flatListRef}
+          data={messages}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => <MessageItem item={item} />}
+          inverted={false}
+          onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
         />
-        <TouchableOpacity style={styles.sendBtn} onPress={sendMessage}>
-          <Text style={{ fontSize: 36 }}>✉️</Text>
-        </TouchableOpacity>
+        <View style={styles.inputRow}>
+          <TextInput
+            style={styles.input}
+            placeholder={t('inputPlaceholder')}
+            value={input}
+            onChangeText={setInput}
+            onSubmitEditing={sendMessage}
+          />
+          <TouchableOpacity style={styles.sendBtn} onPress={sendMessage}>
+            <Image
+              source={require('../../../assets/send.png')}
+              style={{ width: 48, height: 48 }}
+              resizeMode="contain"
+            />
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#e8f5e8", // лёгкий зелёный фон чата
+    backgroundColor: '#e8f5e8',
     padding: 12,
   },
-
-  // Новый дизайн сердечек
   bubbleContainer: {
     maxWidth: '75%',
     marginVertical: 10,
@@ -242,7 +238,6 @@ const styles = StyleSheet.create({
   myBubbleContainer: {
     alignSelf: 'flex-end',
   },
-
   heartBubble: {
     backgroundColor: '#ffffff',
     borderRadius: 30,
@@ -255,9 +250,8 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   myHeartBubble: {
-    backgroundColor: '#e0ffe0', // очень лёгкий зелёный для своих
+    backgroundColor: '#e0ffe0',
   },
-
   heartTail: {
     position: 'absolute',
     bottom: -10,
@@ -276,7 +270,6 @@ const styles = StyleSheet.create({
     left: 'auto',
     right: 25,
   },
-
   smallHearts: {
     position: 'absolute',
     bottom: -25,
@@ -287,37 +280,35 @@ const styles = StyleSheet.create({
     left: 'auto',
     right: 35,
   },
-
   author: {
     fontSize: 12,
-    color: "#555",
+    color: '#555',
     marginBottom: 4,
   },
   text: {
     fontSize: 16,
-    color: "#222",
+    color: '#222',
   },
   timestamp: {
     fontSize: 11,
-    color: "#888",
+    color: '#888',
     marginTop: 6,
     opacity: 0.7,
   },
   myTimestamp: {
     textAlign: 'right',
   },
-
   inputRow: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     borderTopWidth: 1,
-    borderColor: "#ddd",
+    borderColor: '#ddd',
     paddingVertical: 8,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
   },
   input: {
     flex: 1,
-    backgroundColor: "#f0f0f0",
+    backgroundColor: '#f0f0f0',
     borderRadius: 24,
     paddingHorizontal: 16,
     paddingVertical: 10,
@@ -325,18 +316,18 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   sendBtn: {
-    backgroundColor: "#0f0",
+    backgroundColor: '#0f0',
     borderRadius: 24,
     paddingHorizontal: 20,
     paddingVertical: 10,
   },
   center: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   errorText: {
-    color: "red",
+    color: 'red',
     fontSize: 16,
     marginTop: 12,
   },
