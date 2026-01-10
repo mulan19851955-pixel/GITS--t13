@@ -1,15 +1,16 @@
 {
   "expo": {
     "name": "GITS",
-    "slug": "gits--t13",
+    "slug": "gits",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/app-icon.png",
-    "userInterfaceStyle": "light",
+    "icon": "./assets/app-icon.png",
+    "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./assets/images/splash.png",
+      "image": "./assets/splash-cat-paw.gif",
       "resizeMode": "contain",
-      "backgroundColor": "#e8f5e8"
+      "backgroundColor": "#e8f5e8",
+      "duration": 3000
     },
     "assetBundlePatterns": [
       "**/*"
@@ -19,13 +20,13 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/app-icon.png",
+        "foregroundImage": "./assets/app-icon.png",
         "backgroundColor": "#e8f5e8"
       },
       "package": "com.mulanpixel.gits"
     },
     "web": {
-      "favicon": "./assets/images/app-icon.png"
+      "favicon": "./assets/app-icon.png"
     },
     "plugins": [
       "expo-router",
