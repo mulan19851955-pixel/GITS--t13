@@ -3,7 +3,8 @@ import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native
 import { useNavigation } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
 import { Button } from 'react-native';
-import { useGoogleLogin } from '@/src/auth/googleAuth';
+import { db, auth } from '@/src/firebase/firebaseConfig';
+import { useGoogleLogin } from '@/app/auth/googleAuth';
 
 export default function ChatListScreen() {
   const { t } = useTranslation();
@@ -28,6 +29,7 @@ const { user } = useGoogleLogin();
     <TouchableOpacity
       style={styles.chatItem}
       onPress={() => navigation.navigate('chat/index', { chatId: item.id })}
+      
     >
       <View style={styles.avatar}>
         <Text style={{ fontSize: 30 }}>🐾</Text>

@@ -8,9 +8,10 @@ WebBrowser.maybeCompleteAuthSession();
 
 export function useGoogleLogin() {
   const [user, setUser] = useState<any>(null);
-  const [request, response, promptAsync] = Google.useAuthRequest({
-    webClientId: '542379748674-inojds9rpoh416l3c9o450914a2o3r4f.apps.googleusercontent.com',
-  });
+ const [request, response, promptAsync] = Google.useAuthRequest({
+  androidClientId: '542379748674-inojds9rpoh416l3c9o450914a2o3r4f.apps.googleusercontent.com', // ← вот он!
+  // Если тестируешь в Expo Go (на Android) — можно добавить expoClientId (Web Client ID из другого клиента)
+   });
 
   useEffect(() => {
     if (response?.type === 'success') {

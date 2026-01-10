@@ -12,8 +12,8 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { useMessages } from '@/hooks/useMessages';
-import { db } from '../../../src/firebase/firebaseConfig';
+import { useMessages } from '@/src/hooks/useMessages';
+import { db } from '@/src/firebase/firebaseConfig';
 import { collection, addDoc, serverTimestamp, arrayUnion, doc, updateDoc } from 'firebase/firestore';  // ← ВОТ ЭТО!
 const chatId = 'твой_chat_id'; // ← замени на реальный или сделай динамическим позже
 

@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
 import { getAuth, signInWithPhoneNumber } from 'firebase/auth';
 import { FirebaseRecaptchaVerifierModal, FirebaseRecaptchaBanner } from 'expo-firebase-recaptcha';
-import { auth } from '@/firebase/firebaseConfig'; // твой путь к auth
+import { auth } from '@/src/firebase/firebaseConfig';
 
 // Твой Firebase Web Config (скопируй из firebaseConfig.ts)
 const FIREBASE_CONFIG = {
