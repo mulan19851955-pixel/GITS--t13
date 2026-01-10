@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "887386485214",
+    "project_id": "gits-15f9c",
+    "storage_bucket": "gits-15f9c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:887386485214:android:4287f62452ea11e0916d4f",
+        "android_client_info": {
+          "package_name": "com.gits.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "887386485214-61mlok60jaiskt714n3fsvdsjfplmj7r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDEWEGOaP-2jxp7hc91JWUFw5kj4rpRAG4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "887386485214-61mlok60jaiskt714n3fsvdsjfplmj7r.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
