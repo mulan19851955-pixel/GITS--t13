@@ -2,11 +2,14 @@ import { useTranslation } from 'react-i18next';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
+import { Button } from 'react-native';
+import { useGoogleLogin } from '@/src/auth/googleAuth';
 
 export default function ChatListScreen() {
   const { t } = useTranslation();
   const navigation = useNavigation<any>();
   const [chats, setChats] = useState<any[]>([]);
+const { user } = useGoogleLogin();
 
   useEffect(() => {
     setChats([
@@ -45,7 +48,14 @@ export default function ChatListScreen() {
   );
 
   return (
-    <View style={styles.container}>
+  <View style={styles.container}>
+    {!user && (
+      <Button
+        title="Войти по номеру телефона"
+        onPress={() => navigation.navigate('phoneLogin')}
+        color="#4285F4"
+      />
+    )}
       <Text style={styles.title}>Мои чаты 🐾</Text>
 
       <FlatList
