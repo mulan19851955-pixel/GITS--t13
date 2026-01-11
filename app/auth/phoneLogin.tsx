@@ -4,9 +4,9 @@ import { getAuth, signInWithPhoneNumber } from 'firebase/auth';
 import { FirebaseRecaptchaVerifierModal, FirebaseRecaptchaBanner } from 'expo-firebase-recaptcha';
 import { auth } from '@/src/firebase/firebaseConfig';
 
-// Твой Firebase Web Config (скопируй из firebaseConfig.ts)
+// Твой Firebase Web Config
 const FIREBASE_CONFIG = {
-  apiKey: "AIzaSyDEWEGOAP-2jxp7hc9IWUFkjrpGA", // твой ключ
+  apiKey: "AIzaSyDEWEGOAP-2jxp7hc9IWUFkjrpGA",
   authDomain: "gits-15f9c.firebaseapp.com",
   projectId: "gits-15f9c",
   storageBucket: "gits-15f9c.appspot.com",
@@ -19,23 +19,36 @@ export default function PhoneLoginScreen({ navigation }: { navigation: any }) {
   const recaptchaVerifier = useRef(null);
   const [phoneNumber, setPhoneNumber] = useState('+992');
   const [verificationId, setVerificationId] = useState('');
-  const [confirmationResult, setConfirmationResult] = useState<any>(null); // ← добавь эту строку!
+  const [confirmationResult, setConfirmationResult] = useState<any>(null);
   const [code, setCode] = useState('');
   const [message, setMessage] = useState('');
 
   const sendCode = async () => {
+    console.log('Нажата кнопка Отправить код! Номер:', phoneNumber);
+
+    if (!phoneNumber.startsWith('+')) {
+      Alert.alert('Ошибка', 'Номер должен начинаться с +');
+      return;
+    }
+
     try {
+      console.log('Verifier готов?', recaptchaVerifier.current);
+
       const confirmation = await signInWithPhoneNumber(
         auth,
         phoneNumber,
         recaptchaVerifier.current as any
       );
+
+      setConfirmationResult(confirmation);
       setVerificationId(confirmation.verificationId);
       setMessage('Код отправлен на номер! 🐾');
       Alert.alert('Успех', 'Код отправлен!');
+      console.log('Код отправлен успешно!');
     } catch (error: any) {
+      console.error('Ошибка отправки кода:', error);
       setMessage('Ошибка: ' + (error.message || 'Не удалось отправить код'));
-      Alert.alert('Ошибка', error.message);
+      Alert.alert('Ошибка', error.message || 'Неизвестная ошибка');
     }
   };
 
@@ -61,7 +74,7 @@ export default function PhoneLoginScreen({ navigation }: { navigation: any }) {
       <FirebaseRecaptchaVerifierModal
         ref={recaptchaVerifier}
         firebaseConfig={FIREBASE_CONFIG}
-        attemptInvisibleVerification={true} // невидимый reCAPTCHA
+        attemptInvisibleVerification={false}
       />
 
       <Text style={styles.title}>Вход по номеру телефона</Text>
@@ -95,7 +108,6 @@ export default function PhoneLoginScreen({ navigation }: { navigation: any }) {
 
       {message ? <Text style={styles.message}>{message}</Text> : null}
 
-      {/* Требование Google для invisible reCAPTCHA */}
       <FirebaseRecaptchaBanner />
     </View>
   );
