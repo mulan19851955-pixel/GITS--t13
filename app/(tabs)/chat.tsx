@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
+import { router } from 'expo-router';
 import { Button } from 'react-native';
 import { db, auth } from '@/src/firebase/firebaseConfig';
 import { useGoogleLogin } from '@/app/auth/googleAuth';
@@ -53,9 +54,9 @@ const { user } = useGoogleLogin();
   <View style={styles.container}>
     {!user && (
       <Button
-        title="Войти по номеру телефона"
-        onPress={() => navigation.navigate('phoneLogin')}
-        color="#4285F4"
+  title="ВОЙТИ ПО НОМЕРУ ТЕЛЕФОНА"
+  onPress={() => router.push('/auth/phoneLogin')}  // ← вот так! с /auth/
+  color="#4285F4"
       />
     )}
       <Text style={styles.title}>Мои чаты 🐾</Text>
