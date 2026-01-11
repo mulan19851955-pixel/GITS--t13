@@ -1,9 +1,8 @@
 // @ts-nocheck
-import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';  // ← обычный импорт, без /react-native
+import { initializeApp, getApps } from 'firebase/app';
+import { initializeAuth, getAuth, getReactNativePersistence } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
-import { getReactNativePersistence } from 'firebase/auth';  // ← persistence остаётся здесь
 
 const firebaseConfig = {
   apiKey: "AIzaSyBRsWiq5RsWHtGg1LnB45hZnWKhy6QHf4c",
@@ -12,13 +11,22 @@ const firebaseConfig = {
   storageBucket: "gits-15f9c.appspot.com",
   messagingSenderId: "887386485214",
   appId: "1:887386485214:web:be1623afd816ec84916d4f",
-  measurementId: "G-M15DQY2PT1"
+  measurementId: "G-M15DQY2PT1",
 };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-auth.setPersistence(getReactNativePersistence(ReactNativeAsyncStorage));  // ← persistence работает
+// Инициализация app
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 
-const db = getFirestore(app);
+// Инициализация auth с persistence
+let auth;
+try {
+  auth = initializeAuth(app, {
+    persistence: getReactNativePersistence(ReactNativeAsyncStorage)
+  });
+} catch (error) {
+  // Если auth уже инициализирован, используем существующий
+  auth = getAuth(app);
+}
 
-export { app, auth, db };
+export { auth, app };
+export const db = getFirestore(app);
