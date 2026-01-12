@@ -1,0 +1,33 @@
+{
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.preferences.useLabelDetailsInCompletionEntries": true,
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "typescript.tsserver.maxTsServerMemory": 4096,
+  "typescript.tsserver.watchOptions": {
+    "usePolling": true
+  },
+  "typescript.validate.enable": true,
+  "typescript.preferences.includePackageJsonAutoImports": "off",
+  "typescript.disableAutomaticTypeAcquisition": false,
+  "typescript.suggest.autoImports": false,
+  "typescript.tsserver.experimental.enableProjectDiagnostics": false,
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/node_modules/**": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/.expo": true
+  },
+  "files.exclude": {
+    "**/.git": false,
+    "**/.DS_Store": true
+  },
+  "files.associations": {
+    "app/auth/login.tsx": "typescriptreact",
+    "app/auth/googleAuth.ts": "typescript",
+    "app/(tabs)/chat/ichat/chat-id.tsx": "typescriptreact"
+  },
+  "problems.showCurrentInStatus": false
+}

@@ -11,7 +11,7 @@ export default function ChatListScreen() {
   const { t } = useTranslation();
   const navigation = useNavigation<any>();
   const [chats, setChats] = useState<any[]>([]);
-const { user } = useGoogleLogin();
+  const { user } = useGoogleLogin();
 
   useEffect(() => {
     setChats([
@@ -30,7 +30,6 @@ const { user } = useGoogleLogin();
     <TouchableOpacity
       style={styles.chatItem}
       onPress={() => navigation.navigate('chat/index', { chatId: item.id })}
-      
     >
       <View style={styles.avatar}>
         <Text style={{ fontSize: 30 }}>🐾</Text>
@@ -51,14 +50,14 @@ const { user } = useGoogleLogin();
   );
 
   return (
-  <View style={styles.container}>
-    {!user && (
-      <Button
-  title="ВОЙТИ ПО НОМЕРУ ТЕЛЕФОНА"
-  onPress={() => router.push('/auth/phoneLogin')}  // ← вот так! с /auth/
-  color="#4285F4"
-      />
-    )}
+    <View style={styles.container}>
+      {!user && (
+        <Button
+          title="ВОЙТИ ПО НОМЕРУ ТЕЛЕФОНА"
+          onPress={() => router.push('/auth/phoneLogin')}
+          color="#4285F4"
+        />
+      )}
       <Text style={styles.title}>Мои чаты 🐾</Text>
 
       <FlatList
@@ -74,7 +73,7 @@ const { user } = useGoogleLogin();
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#e8f5e8', // твой любимый нежно-зелёный ❤️
+    backgroundColor: '#e8f5e8',
   },
   title: {
     fontSize: 24,

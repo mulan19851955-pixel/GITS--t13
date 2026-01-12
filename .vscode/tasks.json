@@ -1,0 +1,11 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Clear TypeScript Cache",
+      "type": "shell",
+      "command": "powershell -ExecutionPolicy Bypass -File scripts/clear-all-cache.ps1",
+      "problemMatcher": []
+    }
+  ]
+}

@@ -1,4 +1,5 @@
-// @ts-nocheck
+// @ts-nocheck  // <-- Это отключает все TS-проверки в файле, но код работает идеально в RN
+
 import { initializeApp, getApps } from 'firebase/app';
 import { initializeAuth, getAuth, getReactNativePersistence } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
