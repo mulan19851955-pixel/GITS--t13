@@ -9,8 +9,7 @@
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#e8f5e8",
-      "duration": 3000
+      "backgroundColor": "#ffffff"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -21,33 +20,19 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/app-icon.png",
-        "backgroundColor": "#e8f5e8"
+        "backgroundColor": "#ffffff"
       },
-      "package": "com.mulanpixel.gits"
+      "package": "com.gitsmulan.gits",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "favicon": "./assets/app-icon.png"
     },
     "plugins": [
       "expo-router",
-      [
-        "expo-splash-screen",
-        {
-          "image": "./assets/images/splash.png",
-          "imageWidth": 200,
-          "resizeMode": "contain",
-          "backgroundColor": "#ffffff",
-          "dark": {
-            "backgroundColor": "#000000"
-          }
-        }
-      ],
-      "expo-web-browser"
+      "@react-native-firebase/app",
+      "@react-native-firebase/auth"
     ],
-    "experiments": {
-      "typedRoutes": true,
-      "tsconfigPaths": true
-    },
     "extra": {
       "router": {},
       "eas": {

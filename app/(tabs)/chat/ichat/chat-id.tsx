@@ -205,7 +205,7 @@ export default function ChatScreen() {
 
   return (
     <ImageBackground
-      source={require('../../../../../assets/chat_bg_cats_green.png')}
+      source={require('@/assets/chat_bg_cats_green.png')}
       style={{ flex: 1 }}
       resizeMode="repeat"
     >
