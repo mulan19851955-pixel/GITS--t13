@@ -1,47 +1,30 @@
-// @ts-nocheck
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
-import { RecaptchaVerifier, signInWithPhoneNumber, PhoneAuthProvider, signInWithCredential } from 'firebase/auth';
-import { auth } from '@/src/firebase/firebaseConfig';
+import { getAuth, signInWithPhoneNumber } from '@react-native-firebase/auth';
+import { getApp } from '@react-native-firebase/app';
 
-export default function PhoneLoginScreen({ navigation }: { navigation: any }) {
+// Убрали ConfirmationResult — используем any
+export default function PhoneLoginScreen() {
   const [phoneNumber, setPhoneNumber] = useState('+992');
-  const [confirmationResult, setConfirmationResult] = useState<any>(null);
+  const [confirmationResult, setConfirmationResult] = useState<any>(null); // ← any вместо ConfirmationResult
   const [code, setCode] = useState('');
   const [message, setMessage] = useState('');
-  const recaptchaVerifierRef = useRef<any>(null);
+
+  const auth = getAuth(getApp());
 
   const sendCode = async () => {
-    if (!phoneNumber.startsWith('+')) {
-      Alert.alert('Ошибка', 'Номер должен начинаться с +');
-      return;
+  if (!phoneNumber.startsWith('+')) {
+    Alert.alert('Ошибка', 'Номер должен начинаться с +');
+    return;
     }
-
     try {
-      // Invisible reCAPTCHA для React Native
-      // Примечание: RecaptchaVerifier требует WebView в React Native
-      // Для production рекомендуется использовать @react-native-firebase или expo-firebase-recaptcha
-      recaptchaVerifierRef.current = new RecaptchaVerifier(auth, 'recaptcha-container', {
-        size: 'invisible',
-        callback: () => {
-          // reCAPTCHA решена
-        },
-        'expired-callback': () => {
-          Alert.alert('Ошибка', 'reCAPTCHA истекла. Попробуйте снова.');
-        }
-      });
-
-      const confirmation = await signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifierRef.current);
-      setConfirmationResult(confirmation);
-      setMessage('Код отправлен! 🐾');
-      Alert.alert('Успех', 'Код отправлен на номер!');
-    } catch (error: any) {
-      console.error('Ошибка отправки:', error);
-      setMessage('Ошибка: ' + error.message);
-      Alert.alert('Ошибка', error.message || 'Неизвестно');
-      if (recaptchaVerifierRef.current) {
-        recaptchaVerifierRef.current.clear();
-      }
+    const confirmation = await signInWithPhoneNumber(auth, phoneNumber);
+    setConfirmationResult(confirmation);
+    setMessage('Код отправлен! 🐾');
+    Alert.alert('Успех', 'Код отправлен на номер!');
+  } catch (error: any) {
+    console.error('Ошибка отправки кода:', error);
+    Alert.alert('Ошибка', error.message || 'Неизвестная ошибка');
     }
   };
 
@@ -50,26 +33,25 @@ export default function PhoneLoginScreen({ navigation }: { navigation: any }) {
       Alert.alert('Ошибка', 'Введи 6 цифр');
       return;
     }
-
     try {
       if (!confirmationResult) {
         Alert.alert('Ошибка', 'Сначала отправь код');
         return;
       }
-      const credential = PhoneAuthProvider.credential(confirmationResult.verificationId, code);
-      await signInWithCredential(auth, credential);
+      await confirmationResult.confirm(code);
       setMessage('Вход успешен!');
       Alert.alert('Добро пожаловать!', 'Ты вошла ❤️');
-      navigation.navigate('(tabs)');
+      // Переход в чат — если expo-router, используй router.push('(tabs)');
+      // Если старый navigation — navigation.navigate('(tabs)');
     } catch (error: any) {
-      setMessage('Неверный код: ' + error.message);
-      Alert.alert('Ошибка', error.message);
+      console.error('Ошибка подтверждения кода:', error);
+      setMessage('Неверный код: ' + (error.message || 'Неизвестная ошибка'));
+      Alert.alert('Ошибка', error.message || 'Неверный код');
     }
   };
 
   return (
     <View style={styles.container}>
-      <View id="recaptcha-container" style={{ position: 'absolute', opacity: 0, height: 0, width: 0 }} />
       <Text style={styles.title}>Вход по номеру</Text>
       {!confirmationResult ? (
         <>
@@ -80,6 +62,7 @@ export default function PhoneLoginScreen({ navigation }: { navigation: any }) {
             value={phoneNumber}
             onChangeText={setPhoneNumber}
             keyboardType="phone-pad"
+            autoFocus
           />
           <Button title="Отправить код" onPress={sendCode} color="#4285F4" />
         </>
@@ -93,6 +76,7 @@ export default function PhoneLoginScreen({ navigation }: { navigation: any }) {
             onChangeText={setCode}
             keyboardType="number-pad"
             maxLength={6}
+            autoFocus
           />
           <Button title="Войти" onPress={confirmCode} color="#0f0" />
         </>

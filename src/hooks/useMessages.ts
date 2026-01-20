@@ -1,16 +1,17 @@
 import { useState, useEffect } from 'react';
-import { 
-  collection, 
-  query, 
-  orderBy, 
-  onSnapshot, 
+import {
+  collection,
+  query,
+  orderBy,
+  onSnapshot,
   Timestamp,
   QuerySnapshot,
   DocumentData,
   Unsubscribe,
-  FirestoreError
+  FirestoreError,
+  WithFieldValue,
+  QueryDocumentSnapshot,
 } from 'firebase/firestore';
-import { Firestore } from 'firebase/firestore';
 import { db } from '@/src/firebase/firebaseConfig';
 
 export interface Message {
@@ -20,6 +21,26 @@ export interface Message {
   createdAt: Timestamp | null;
   reactions?: string[];
 }
+
+export const messageConverter = {
+  toFirestore: (modelObject: WithFieldValue<Omit<Message, 'id'>>): DocumentData => ({
+    text: modelObject.text,
+    author: modelObject.author,
+    createdAt: modelObject.createdAt,
+    reactions: modelObject.reactions,
+  }),
+
+  fromFirestore: (snapshot: QueryDocumentSnapshot<DocumentData>): Message => {
+    const data = snapshot.data();
+    return {
+      id: snapshot.id,
+      text: typeof data.text === 'string' ? data.text : '',
+      author: typeof data.author === 'string' ? data.author : 'Unknown',
+      createdAt: data.createdAt instanceof Timestamp ? data.createdAt : null,
+      reactions: Array.isArray(data.reactions) ? data.reactions : undefined,
+    };
+  },
+};
 
 export interface UseMessagesReturn {
   messages: Message[];
@@ -32,83 +53,46 @@ export function useMessages(chatId: string): UseMessagesReturn {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect((): (() => void) | undefined => {
-    // Валидация chatId
+  useEffect(() => {
     if (!chatId || typeof chatId !== 'string' || chatId.trim() === '') {
       setLoading(false);
       setError('Invalid chat ID');
       setMessages([]);
-      return undefined;
+      return;
     }
 
     let unsubscribe: Unsubscribe | undefined;
 
     try {
-      // Создаём ссылку на коллекцию сообщений
-      const messagesRef = collection(db as Firestore, 'chats', chatId, 'messages');
-      
-      // Создаём запрос с сортировкой по дате создания
-      const q = query(messagesRef, orderBy('createdAt', 'asc'));
+      const messagesCollection = collection(db, 'chats', chatId, 'messages');
+      const typedCollection = messagesCollection.withConverter(messageConverter);
 
-      // Подписываемся на изменения в реальном времени
-      unsubscribe = onSnapshot(
-        q,
-        (snapshot: QuerySnapshot<DocumentData>): void => {
-          try {
-            const loadedMessages: Message[] = snapshot.docs.map((doc): Message => {
-              const data = doc.data();
-              
-              // Валидация и преобразование данных
-              return {
-                id: doc.id,
-                text: typeof data.text === 'string' ? data.text : '',
-                author: typeof data.author === 'string' ? data.author : 'Unknown',
-                createdAt: data.createdAt instanceof Timestamp ? data.createdAt : null,
-                reactions: Array.isArray(data.reactions) ? data.reactions : undefined,
-              };
-            });
+      const q = query(typedCollection, orderBy('createdAt', 'asc'));
 
-            setMessages(loadedMessages);
-            setLoading(false);
-            setError(null);
-          } catch (parseError: unknown) {
-            const errorMessage = parseError instanceof Error 
-              ? parseError.message 
-              : 'Ошибка обработки данных сообщений';
-            console.error('Ошибка парсинга сообщений:', parseError);
-            setError(errorMessage);
-            setLoading(false);
-            setMessages([]);
-          }
+      unsubscribe = onSnapshot(q, {
+        next: (snapshot) => {  // без <Message> здесь — TS выводит из converter
+          const loadedMessages = snapshot.docs.map((doc) => doc.data() as Message);
+          setMessages(loadedMessages);
+          setLoading(false);
+          setError(null);
         },
-        (err: FirestoreError): void => {
-          console.error('Ошибка загрузки сообщений из Firestore:', err);
-          const errorMessage = err?.message || 'Неизвестная ошибка при загрузке сообщений';
-          setError(errorMessage);
+        error: (err) => {
+          console.error('Firestore listener error:', err);
+          setError(err.message || 'Ошибка загрузки сообщений');
           setLoading(false);
           setMessages([]);
         }
-      );
+      });
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error 
-        ? err.message 
-        : 'Неизвестная ошибка при инициализации подписки';
-      console.error('Ошибка создания подписки на сообщения:', err);
-      setError(errorMessage);
+      const msg = err instanceof Error ? err.message : 'Ошибка инициализации подписки';
+      console.error('Init error:', err);
+      setError(msg);
       setLoading(false);
       setMessages([]);
-      return undefined;
     }
 
-    // Функция очистки подписки
-    return (): void => {
-      if (unsubscribe) {
-        try {
-          unsubscribe();
-        } catch (cleanupError: unknown) {
-          console.error('Ошибка при отписке от сообщений:', cleanupError);
-        }
-      }
+    return () => {
+      if (unsubscribe) unsubscribe();
     };
   }, [chatId]);
 

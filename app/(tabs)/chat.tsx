@@ -27,9 +27,9 @@ export default function ChatListScreen() {
   }, []);
 
   const renderChatItem = ({ item }: any) => (
-    <TouchableOpacity
-      style={styles.chatItem}
-      onPress={() => navigation.navigate('chat/index', { chatId: item.id })}
+  <TouchableOpacity
+    style={styles.chatItem}
+    onPress={() => router.push({ pathname: '/chat/[id]', params: { id: item.id } })}
     >
       <View style={styles.avatar}>
         <Text style={{ fontSize: 30 }}>🐾</Text>

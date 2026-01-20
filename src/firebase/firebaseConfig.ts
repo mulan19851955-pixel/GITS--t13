@@ -1,9 +1,6 @@
-// @ts-nocheck  // <-- Это отключает все TS-проверки в файле, но код работает идеально в RN
-
-import { initializeApp, getApps } from 'firebase/app';
-import { initializeAuth, getAuth, getReactNativePersistence } from 'firebase/auth';
+import { initializeApp, getApps, getApp } from 'firebase/app';
+import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
-import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 
 const firebaseConfig = {
   apiKey: "AIzaSyBRsWiq5RsWHtGg1LnB45hZnWKhy6QHf4c",
@@ -12,22 +9,19 @@ const firebaseConfig = {
   storageBucket: "gits-15f9c.appspot.com",
   messagingSenderId: "887386485214",
   appId: "1:887386485214:web:be1623afd816ec84916d4f",
-  measurementId: "G-M15DQY2PT1",
+  measurementId: "G-M15DQY2PT1"
 };
 
-// Инициализация app
-const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 
-// Инициализация auth с persistence
-let auth;
-try {
-  auth = initializeAuth(app, {
-    persistence: getReactNativePersistence(ReactNativeAsyncStorage)
-  });
-} catch (error) {
-  // Если auth уже инициализирован, используем существующий
-  auth = getAuth(app);
+// Ключевой момент: инициализируем синхронно, если ещё нет приложения
+let app;
+if (getApps().length === 0) {
+  app = initializeApp(firebaseConfig);
+} else {
+  app = getApp(); // берём уже существующее — без Promise!
 }
 
-export { auth, app };
+// @ts-ignore
+export const auth = getAuth(app);
+// @ts-ignore
 export const db = getFirestore(app);

@@ -204,38 +204,32 @@ export default function ChatScreen() {
   }
 
   return (
-    <ImageBackground
-      source={require('@/assets/chat_bg_cats_green.png')}
-      style={{ flex: 1 }}
-      resizeMode="repeat"
-    >
-      <View style={{ flex: 1, backgroundColor: 'rgba(232, 245, 232, 0.65)' }}>
-        <FlatList<Message>
-          ref={flatListRef}
-          data={messages}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => <MessageItem item={item} />}
-          inverted={false}
-          onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
+  <View style={{ flex: 1, backgroundColor: '#e8f5e8' }}>  {/* светло-зелёный фон вместо картинки */}
+    <FlatList<Message>
+      ref={flatListRef}
+      data={messages}
+      keyExtractor={(item) => item.id}
+      renderItem={({ item }) => <MessageItem item={item} />}
+      inverted={false}
+      onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
+    />
+    <View style={styles.inputRow}>
+      <TextInput
+        style={styles.input}
+        placeholder={t('inputPlaceholder')}
+        value={input}
+        onChangeText={setInput}
+        onSubmitEditing={sendMessage}
+      />
+      <TouchableOpacity style={styles.sendBtn} onPress={sendMessage}>
+        <Image
+          source={require('../../../../assets/send.png')}
+          style={{ width: 48, height: 48 }}
+          resizeMode="contain"
         />
-        <View style={styles.inputRow}>
-          <TextInput
-            style={styles.input}
-            placeholder={t('inputPlaceholder')}
-            value={input}
-            onChangeText={setInput}
-            onSubmitEditing={sendMessage}
-          />
-          <TouchableOpacity style={styles.sendBtn} onPress={sendMessage}>
-            <Image
-              source={require('../../../../assets/send.png')}
-              style={{ width: 48, height: 48 }}
-              resizeMode="contain"
-            />
-          </TouchableOpacity>
-        </View>
-      </View>
-    </ImageBackground>
+      </TouchableOpacity>
+    </View>
+  </View>
   );
 }
 

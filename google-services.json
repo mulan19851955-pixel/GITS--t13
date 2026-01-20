@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:887386485214:android:4287f62452ea11e0916d4f",
+        "mobilesdk_app_id": "1:887386485214:android:1b2cd5d9671bac75916d4f",
         "android_client_info": {
-          "package_name": "com.gits.app"
+          "package_name": "com.gitsmulan.gits"
         }
       },
       "oauth_client": [
