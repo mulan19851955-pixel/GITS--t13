@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { collection, query, where, onSnapshot, orderBy, limit } from 'firebase/firestore';
-import { db, auth } from '@/src/firebase/firebaseConfig';
+import { db, auth } from '@/firebase/firebaseConfig';
 import { useRouter } from 'expo-router';
 
 export default function ChatsListScreen() {

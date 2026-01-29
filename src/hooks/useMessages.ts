@@ -1,3 +1,4 @@
+// @ts-ignore
 import { useState, useEffect } from 'react';
 import {
   collection,
@@ -12,7 +13,7 @@ import {
   WithFieldValue,
   QueryDocumentSnapshot,
 } from 'firebase/firestore';
-import { db } from '@/src/firebase/firebaseConfig';
+import { auth, db } from 'E:/Project/GITS/firebaseConfig';
 
 export interface Message {
   id: string;

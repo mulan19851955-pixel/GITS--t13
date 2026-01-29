@@ -2,23 +2,18 @@
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "strict": true,
-    "module": "esnext",
-    "moduleResolution": "bundler",
-    "target": "esnext",
-    "jsx": "react-jsx",
     "baseUrl": ".",
     "paths": {
       "@/*": [
         "./*"
+      ],
+      "@/firebase/*": [
+        "./firebase/*"
       ]
-    },
-    "allowJs": true,
-    "skipLibCheck": true
+    }
   },
   "include": [
-  "**/*.ts",
-  "**/*.tsx",
-  "src",
-  "node_modules/@react-native-firebase/**/*"
-]
+    "**/*.ts",
+    "**/*.tsx"
+  ]
 }

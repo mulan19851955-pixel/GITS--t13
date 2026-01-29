@@ -1,6 +1,6 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';          // ← веб-версия
+import { getFirestore } from 'firebase/firestore'; // веб-версия
 
 const firebaseConfig = {
   apiKey: "AIzaSyBRsWiq5RsWHtGg1LnB45hZnWKhy6QHf4c",
@@ -12,16 +12,12 @@ const firebaseConfig = {
   measurementId: "G-M15DQY2PT1"
 };
 
-
-// Ключевой момент: инициализируем синхронно, если ещё нет приложения
 let app;
 if (getApps().length === 0) {
   app = initializeApp(firebaseConfig);
 } else {
-  app = getApp(); // берём уже существующее — без Promise!
+  app = getApp();
 }
 
-// @ts-ignore
 export const auth = getAuth(app);
-// @ts-ignore
 export const db = getFirestore(app);

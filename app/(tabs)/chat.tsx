@@ -4,7 +4,8 @@ import { useNavigation } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
 import { router } from 'expo-router';
 import { Button } from 'react-native';
-import { db, auth } from '@/src/firebase/firebaseConfig';
+// @ts-ignore
+import { auth } from '../../firebase/firebaseConfig';
 import { useGoogleLogin } from '@/app/auth/googleAuth';
 
 export default function ChatListScreen() {

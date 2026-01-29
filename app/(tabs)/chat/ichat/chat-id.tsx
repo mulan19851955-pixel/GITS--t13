@@ -16,7 +16,7 @@ import {
 } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { useMessages } from '@/src/hooks/useMessages';
-import { db } from '@/src/firebase/firebaseConfig';
+import { db } from '@/firebase/firebaseConfig';
 import { collection, addDoc, serverTimestamp, arrayUnion, doc, updateDoc, Timestamp } from 'firebase/firestore';
 
 interface Message {
@@ -29,7 +29,7 @@ interface Message {
 
 export default function ChatScreen() {
   const params = useLocalSearchParams();
-  const chatId = params.id as string;
+  const chatId = 'gits';  // или 'GITS_chats' — то, что ты создала в консоли
   
   const { messages, loading } = useMessages(chatId);
   const [input, setInput] = useState<string>('');
